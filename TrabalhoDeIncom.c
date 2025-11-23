@@ -131,7 +131,7 @@ void adicionar_compromisso() {
         return;
     }
 
-    // limpar buffer (jeito mais simples, sem frescura)
+    // limpar buffer
     while((temp = getchar()) != '\n' && temp != EOF);
 
     printf("Descricao: ");
