@@ -7,7 +7,7 @@
 #define DIAS 7
 #define HORAS 24
 
-// estrutura simples do compromisso
+// estrutura  dos compromisso
 struct Compromisso {
     char descricao[100];
     char local[50];
@@ -29,6 +29,7 @@ void editar_compromisso();
 void mudar_prioridade();
 int verificar_disponibilidade(int dia, int hora, int duracao);
 
+// eduardo -> função principal
 int main() {
 
     int opcao;
@@ -70,7 +71,7 @@ int main() {
     return 0;
 }
 
-// coloca tudo como vazio
+//  Marcos -> funcao que inicializa agenda vazia
 void inicializar_agenda(){
     for(int i=0;i<DIAS;i++){
         for(int j=0;j<HORAS;j++){
@@ -82,7 +83,7 @@ void inicializar_agenda(){
         }
     }
 }
-
+// Marcos -> funcao que mostra o menu principal
 void mostrar_menu(){
     printf("\n--- MENU ---\n");
     printf("1 - Adicionar compromisso\n");
@@ -92,7 +93,7 @@ void mostrar_menu(){
     printf("5 - Mudar prioridade\n");
     printf("0 - Sair\n");
 }
-
+// Isabela -> função que adiciona compromisso a agenda
 void adicionar_compromisso() {
 
     int dia, hora, duracao;
@@ -151,7 +152,7 @@ void adicionar_compromisso() {
 
     printf("Compromisso adicionado.\n");
 }
-
+// lucca -> função que remove compromisso da agenda
 void remover_compromisso(){
     int dia, hora;
 
@@ -186,7 +187,7 @@ void remover_compromisso(){
 
     printf("Removido.\n");
 }
-
+// Eduardo -> funcao que visualizaa a agenda como um todo
 void ver_agenda(){
 
     printf("\n--- Agenda ---\n");
@@ -222,7 +223,7 @@ void ver_agenda(){
         printf("Nenhum compromisso ainda.\n");
     }
 }
-
+// Isabela -> funcao que edita os compromissos da agenda
 void editar_compromisso(){
 
     int dia, hora;
@@ -254,7 +255,7 @@ void editar_compromisso(){
 
     printf("Atualizado.\n");
 }
-
+// Marcos -> funcao que muda a prioridade dos compromissos da agenda
 void mudar_prioridade(){
     int dia, hora;
 
@@ -287,7 +288,7 @@ void mudar_prioridade(){
 
     printf("Alterado.\n");
 }
-
+// Lucca -> funcao que verifica se o horario ta disponivel
 int verificar_disponibilidade(int dia, int hora, int duracao){
     for(int i=0; i<duracao; i++){
         if(agenda[dia][hora+i].ocupado){
