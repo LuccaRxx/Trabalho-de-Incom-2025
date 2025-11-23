@@ -86,49 +86,6 @@ int main() {
     return 0;
 }
 
-void inicializar_agenda();
-    
-    // Loop principal
-    do {
-        mostrar_menu();
-        printf("\nEscolha uma opção: ");
-        
-        if(scanf("%d", &opcao) != 1) {
-            printf("Opção inválida! Digite um número.\n");
-            limpar_buffer();
-            continue;
-        }
-        limpar_buffer();
-        
-        // Switch pra ficar mais organizado
-        switch(opcao) {
-            case 1:
-                adicionar_compromisso();
-                break;
-            case 2:
-                remover_compromisso();
-                break;
-            case 3:
-                ver_agenda();
-                break;
-            case 4:
-                editar_compromisso();
-                break;
-            case 5:
-                mudar_prioridade();
-                break;
-            case 0:
-                printf("\nAté mais! Saindo da agenda...\n");
-                break;
-            default:
-                printf("Opção não existe! Tente de novo.\n");
-        }
-        
-    } while(opcao != 0);
-    
-    return 0;
-}
-
 // Zera toda a agenda
 void inicializar_agenda() {
     int i, j;
@@ -153,129 +110,169 @@ void mostrar_menu() {
     printf("\n 5 - ⭐ Prioridade          ");
     printf("\n 0 - 🚪 Sair                ");
 }
-
-// Adiciona novo compromisso
+// Adiciona um compromisso novo
 void adicionar_compromisso() {
     int dia, hora, duracao;
-    char descricao[100], local[50];
-    
+    char descricao[100];
+    char local[50];
+
     printf("\n═════ NOVO COMPROMISSO ═════\n");
-    
-    // Mostra os dias disponíveis
-    printf("\nDias da semana:\n");
-    for(int i = 0; i < DIAS; i++) {
-        printf("%d - %s\n", i+1, nomes_dias[i]);
-    }
-    
-    // Pega o dia
-    printf("\nEscolha o dia (1-7): ");
-    scanf("%d", &dia);
+
+    printf("Dia (1-7): ");
+    if(scanf("%d", &dia) != 1) { printf("Entrada inválida.\n"); limpar_buffer(); return; }
     limpar_buffer();
-    
-    if(dia < 1 || dia > 7) {
-        printf("Dia inválido!\n");
-        return;
-    }
-    dia--; // Ajusta pro índice do array
-    
-    // Pega a hora
-    printf("Hora de início (0-23): ");
-    scanf("%d", &hora);
+    dia--;
+    if(dia < 0 || dia >= DIAS) { printf("Dia fora do intervalo.\n"); return; }
+
+    printf("Hora inicial (0-23): ");
+    if(scanf("%d", &hora) != 1) { printf("Entrada inválida.\n"); limpar_buffer(); return; }
     limpar_buffer();
-    
-    if(hora < 0 || hora > 23) {
-        printf("Hora inválida!\n");
-        return;
-    }
-    
-    // Pega a duração
-    printf("Duração (em horas): ");
-    scanf("%d", &duracao);
+    if(hora < 0 || hora >= HORAS) { printf("Hora fora do intervalo.\n"); return; }
+
+    printf("Duração em horas (1-24): ");
+    if(scanf("%d", &duracao) != 1) { printf("Entrada inválida.\n"); limpar_buffer(); return; }
     limpar_buffer();
-    
-    if(duracao < 1 || duracao > 24) {
-        printf("Duração inválida! (1-24 horas)\n");
-        return;
-    }
-    
-    // Verifica se tá livre
+    if(duracao < 1 || duracao > HORAS || hora + duracao > HORAS) { printf("Duração inválida.\n"); return; }
+
     if(verificar_disponibilidade(dia, hora, duracao)) {
-        printf("\n❌ Conflito de horário! Já tem compromisso nesse período.\n");
+        printf("Conflito de horário. Escolha outro.\n");
         return;
     }
-    
-    // Pega os detalhes
+
     printf("Descrição: ");
-    fgets(descricao, sizeof(descricao), stdin);
+    if(fgets(descricao, sizeof(descricao), stdin) == NULL) return;
     descricao[strcspn(descricao, "\n")] = '\0';
-    
+
     printf("Local: ");
-    fgets(local, sizeof(local), stdin);
+    if(fgets(local, sizeof(local), stdin) == NULL) return;
     local[strcspn(local, "\n")] = '\0';
-    
-    // Salva na agenda
-    strcpy(agenda[dia][hora].descricao, descricao);
-    strcpy(agenda[dia][hora].local, local);
+
+    // Preenche primeira hora
+    strncpy(agenda[dia][hora].descricao, descricao, sizeof(agenda[dia][hora].descricao)-1);
+    agenda[dia][hora].descricao[sizeof(agenda[dia][hora].descricao)-1] = '\0';
+    strncpy(agenda[dia][hora].local, local, sizeof(agenda[dia][hora].local)-1);
+    agenda[dia][hora].local[sizeof(agenda[dia][hora].local)-1] = '\0';
     agenda[dia][hora].ocupado = 1;
     agenda[dia][hora].duracao = duracao;
-    agenda[dia][hora].prioridade = 0; // Começa como normal
-    
-    // Marca as horas seguintes como continuação
+    agenda[dia][hora].prioridade = 0;
+
+    // Horas seguintes marcadas como continuação
     for(int i = 1; i < duracao; i++) {
-        if(hora + i < HORAS) {
-            agenda[dia][hora + i].ocupado = 1;
-            strcpy(agenda[dia][hora + i].descricao, "(continuação)");
-            strcpy(agenda[dia][hora + i].local, local);
-            agenda[dia][hora + i].duracao = 0; // 0 = é continuação
-            agenda[dia][hora + i].prioridade = agenda[dia][hora].prioridade;
-        }
+        agenda[dia][hora + i].ocupado = 1;
+        agenda[dia][hora + i].duracao = 0; // indica continuação
+        agenda[dia][hora + i].prioridade = 0;
+        agenda[dia][hora + i].descricao[0] = '\0';
+        agenda[dia][hora + i].local[0] = '\0';
     }
-    
-    printf("\n✅ Compromisso adicionado com sucesso!\n");
+
+    printf("✅ Compromisso adicionado!\n");
 }
 
+// Remove compromisso (apenas a partir da hora inicial)
+void remover_compromisso() {
+    int dia, hora;
 
-void removerCompromisso() {
-    int dia, hora, i, dur;
-    
-    printf("\n--- Remover Compromisso ---\n");
-    
-    for(i = 0; i < 7; i++) {
-        printf("%d - %s\n", i+1, dias[i]);
-    }
-    
+    printf("\n═════ REMOVER COMPROMISSO ═════\n");
+
     printf("Dia (1-7): ");
-    scanf("%d", &dia);
-    getchar();
-    dia = dia - 1;
-    
-    printf("Hora (0-23): ");
-    scanf("%d", &hora);
-    getchar();
-    
-    if(agenda[dia][hora].ocupado == 0) {
-        printf("\nNao tem compromisso nesse horario!\n");
-        return;
+    if(scanf("%d", &dia) != 1) { printf("Entrada inválida.\n"); limpar_buffer(); return; }
+    limpar_buffer();
+    dia--;
+    if(dia < 0 || dia >= DIAS) { printf("Dia fora do intervalo.\n"); return; }
+
+    printf("Hora inicial (0-23): ");
+    if(scanf("%d", &hora) != 1) { printf("Entrada inválida.\n"); limpar_buffer(); return; }
+    limpar_buffer();
+    if(hora < 0 || hora >= HORAS) { printf("Hora fora do intervalo.\n"); return; }
+
+    if(!agenda[dia][hora].ocupado) { printf("Não há compromisso aqui.\n"); return; }
+    if(agenda[dia][hora].duracao == 0) { printf("Esta é continuação. Remova pelo início.\n"); return; }
+
+    int dur = agenda[dia][hora].duracao;
+    for(int i = 0; i < dur && hora + i < HORAS; i++) {
+        agenda[dia][hora + i].descricao[0] = '\0';
+        agenda[dia][hora + i].local[0] = '\0';
+        agenda[dia][hora + i].ocupado = 0;
+        agenda[dia][hora + i].duracao = 1;
+        agenda[dia][hora + i].prioridade = 0;
     }
-    
-    if(agenda[dia][hora].duracao == 0) {
-        printf("\nEsse e uma continuacao. Remova pelo inicio!\n");
-        return;
-    }
-    
-    dur = agenda[dia][hora].duracao;
-    
-    // remove tudo
-    for(i = 0; i < dur; i++) {
-        if(hora + i < 24) {
-            agenda[dia][hora + i].descricao[0] = '\0';
-            agenda[dia][hora + i].local[0] = '\0';
-            agenda[dia][hora + i].ocupado = 0;
-            agenda[dia][hora + i].duracao = 1;
+    printf("✅ Compromisso removido!\n");
+}
+
+// Edita um compromisso existente
+void editar_compromisso() {
+    int dia, hora;
+    printf("\n═════ EDITAR COMPROMISSO ═════\n");
+
+    printf("Dia (1-7): ");
+    if(scanf("%d", &dia) != 1) { printf("Entrada inválida.\n"); limpar_buffer(); return; }
+    limpar_buffer();
+    dia--; if(dia < 0 || dia >= DIAS) { printf("Dia inválido.\n"); return; }
+
+    printf("Hora inicial (0-23): ");
+    if(scanf("%d", &hora) != 1) { printf("Entrada inválida.\n"); limpar_buffer(); return; }
+    limpar_buffer();
+    if(hora < 0 || hora >= HORAS) { printf("Hora inválida.\n"); return; }
+
+    if(!agenda[dia][hora].ocupado || agenda[dia][hora].duracao == 0) { printf("Não encontrado (ou é continuação).\n"); return; }
+
+    int dur_atual = agenda[dia][hora].duracao;
+    printf("Atual: %s | Local: %s | Duração: %d h\n", agenda[dia][hora].descricao, agenda[dia][hora].local, dur_atual);
+
+    char buffer[120];
+    printf("Nova descrição (ENTER mantém): ");
+    if(fgets(buffer, sizeof(buffer), stdin)) {
+        if(buffer[0] != '\n') {
+            buffer[strcspn(buffer, "\n")] = '\0';
+            strncpy(agenda[dia][hora].descricao, buffer, sizeof(agenda[dia][hora].descricao)-1);
+            agenda[dia][hora].descricao[sizeof(agenda[dia][hora].descricao)-1] = '\0';
         }
     }
-    
-    printf("\nCompromisso removido!\n");
+
+    printf("Novo local (ENTER mantém): ");
+    if(fgets(buffer, sizeof(buffer), stdin)) {
+        if(buffer[0] != '\n') {
+            buffer[strcspn(buffer, "\n")] = '\0';
+            strncpy(agenda[dia][hora].local, buffer, sizeof(agenda[dia][hora].local)-1);
+            agenda[dia][hora].local[sizeof(agenda[dia][hora].local)-1] = '\0';
+        }
+    }
+
+    printf("Nova duração (0 mantém): ");
+    int nova_dur;
+    if(scanf("%d", &nova_dur) != 1) { printf("Entrada inválida.\n"); limpar_buffer(); return; }
+    limpar_buffer();
+
+    if(nova_dur > 0 && nova_dur != dur_atual) {
+        if(nova_dur < dur_atual) {
+            // Encurtar: liberar horas excedentes
+            for(int i = nova_dur; i < dur_atual && hora + i < HORAS; i++) {
+                agenda[dia][hora + i].descricao[0] = '\0';
+                agenda[dia][hora + i].local[0] = '\0';
+                agenda[dia][hora + i].ocupado = 0;
+                agenda[dia][hora + i].duracao = 1;
+                agenda[dia][hora + i].prioridade = 0;
+            }
+            agenda[dia][hora].duracao = nova_dur;
+        } else {
+            // Aumentar: verificar disponibilidade adicional
+            int extra = nova_dur - dur_atual;
+            if(verificar_disponibilidade(dia, hora + dur_atual, extra)) {
+                printf("Não há espaço para aumentar a duração.\n");
+            } else {
+                for(int i = dur_atual; i < nova_dur && hora + i < HORAS; i++) {
+                    agenda[dia][hora + i].ocupado = 1;
+                    agenda[dia][hora + i].duracao = 0;
+                    agenda[dia][hora + i].prioridade = agenda[dia][hora].prioridade;
+                    agenda[dia][hora + i].descricao[0] = '\0';
+                    agenda[dia][hora + i].local[0] = '\0';
+                }
+                agenda[dia][hora].duracao = nova_dur;
+            }
+        }
+    }
+
+    printf("✅ Compromisso editado!\n");
 }
 
 void ver_agenda() {
@@ -311,6 +308,7 @@ void ver_agenda() {
         printf("\nNada marcado ainda... Que tal adicionar um compromisso?\n");
     }
 }
+
 
 // Edita compromisso existente
 void editar_compromisso() {
