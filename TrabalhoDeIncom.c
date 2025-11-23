@@ -152,3 +152,59 @@ void mostrar_menu() {
     printf("\n 5 - ⭐ Prioridade          ");
     printf("\n 0 - 🚪 Sair                ");
 }
+
+// Muda prioridade
+void mudar_prioridade() {
+    int dia, hora, opcao;
+    
+    printf("\n═════ MUDAR PRIORIDADE ═════\n");
+    
+    printf("\nDia (1-7): ");
+    scanf("%d", &dia);
+    limpar_buffer();
+    dia--;
+    
+    printf("Hora (0-23): ");
+    scanf("%d", &hora);
+    limpar_buffer();
+    
+    if(!agenda[dia][hora].ocupado || agenda[dia][hora].duracao == 0) {
+        printf("Compromisso não encontrado!\n");
+        return;
+    }
+    
+    printf("\nCompromisso: %s\n", agenda[dia][hora].descricao);
+    printf("Prioridade atual: %s\n", 
+           agenda[dia][hora].prioridade ? "⭐ ALTA" : "Normal");
+    
+    printf("\n1 - Marcar como ⭐ PRIORIDADE\n");
+    printf("2 - Voltar para Normal\n");
+    printf("Escolha: ");
+    scanf("%d", &opcao);
+    limpar_buffer();
+    
+    int nova_prioridade = (opcao == 1) ? 1 : 0;
+    agenda[dia][hora].prioridade = nova_prioridade;
+    
+    // Aplica pra todas as horas do compromisso
+    for(int i = 0; i < agenda[dia][hora].duracao; i++) {
+        if(hora + i < HORAS) {
+            agenda[dia][hora + i].prioridade = nova_prioridade;
+        }
+    }
+    
+    printf("✅ Prioridade atualizada!\n");
+}
+
+// Verifica se o horário tá livre
+int verificar_disponibilidade(int dia, int hora, int duracao) {
+    for(int i = 0; i < duracao; i++) {
+        if(hora + i >= HORAS) {
+            return 1; // Inválido - passa do dia
+        }
+        if(agenda[dia][hora + i].ocupado) {
+            return 1; // Ocupado
+        }
+    }
+    return 0; // Tudo livre
+}
