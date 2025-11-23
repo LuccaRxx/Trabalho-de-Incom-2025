@@ -153,6 +153,50 @@ void mostrar_menu() {
     printf("\n 0 - 🚪 Sair                ");
 }
 
+void removerCompromisso() {
+    int dia, hora, i, dur;
+    
+    printf("\n--- Remover Compromisso ---\n");
+    
+    for(i = 0; i < 7; i++) {
+        printf("%d - %s\n", i+1, dias[i]);
+    }
+    
+    printf("Dia (1-7): ");
+    scanf("%d", &dia);
+    getchar();
+    dia = dia - 1;
+    
+    printf("Hora (0-23): ");
+    scanf("%d", &hora);
+    getchar();
+    
+    if(agenda[dia][hora].ocupado == 0) {
+        printf("\nNao tem compromisso nesse horario!\n");
+        return;
+    }
+    
+    if(agenda[dia][hora].duracao == 0) {
+        printf("\nEsse e uma continuacao. Remova pelo inicio!\n");
+        return;
+    }
+    
+    dur = agenda[dia][hora].duracao;
+    
+    // remove tudo
+    for(i = 0; i < dur; i++) {
+        if(hora + i < 24) {
+            agenda[dia][hora + i].descricao[0] = '\0';
+            agenda[dia][hora + i].local[0] = '\0';
+            agenda[dia][hora + i].ocupado = 0;
+            agenda[dia][hora + i].duracao = 1;
+        }
+    }
+    
+    printf("\nCompromisso removido!\n");
+}
+
+
 // Muda prioridade
 void mudar_prioridade() {
     int dia, hora, opcao;
