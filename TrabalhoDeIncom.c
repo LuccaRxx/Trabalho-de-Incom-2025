@@ -2,11 +2,11 @@
 #include <string.h>
 #include <stdlib.h>
 
-// Defines pra facilitar a vida
+// defines pra facilitar a vida
 #define DIAS 7
 #define HORAS 24
 
-// Estrutura do compromisso
+// estrutura do compromisso
 struct Compromisso {
     char descricao[100];
     char local[50];
@@ -15,13 +15,13 @@ struct Compromisso {
     int prioridade;     // 0 = normal, 1 = alta
 };
 
-// Agenda global - matriz de dias x horas
+// agenda global - matriz de dias x horas
 struct Compromisso agenda[DIAS][HORAS];
 
-// Nomes dos dias pra mostrar bonitinho
+// nomes dos dias pra mostrar bonitinho -> uso de ponteiros pras strings
 char *nomes_dias[] = {"Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"};
 
-// Protótipos das funções
+// protótipos das funções
 void inicializar_agenda();
 void mostrar_menu();
 void adicionar_compromisso();
@@ -86,7 +86,7 @@ int main() {
     return 0;
 }
 
-// Zera toda a agenda
+// zera toda a agenda
 void inicializar_agenda() {
     int i, j;
     for(i = 0; i < DIAS; i++) {
@@ -100,7 +100,7 @@ void inicializar_agenda() {
     }
 }
 
-// Menu bonitinho
+// menu bonitinho com emojiss
 void mostrar_menu() {
     printf("\n          MENU              ");
     printf("\n 1 - ➕ Novo compromisso    ");
@@ -110,7 +110,8 @@ void mostrar_menu() {
     printf("\n 5 - ⭐ Prioridade          ");
     printf("\n 0 - 🚪 Sair                ");
 }
-// Adiciona um compromisso novo
+
+// adiciona um compromisso novo
 void adicionar_compromisso() {
     int dia, hora, duracao;
     char descricao[100];
@@ -168,7 +169,7 @@ void adicionar_compromisso() {
     printf("✅ Compromisso adicionado!\n");
 }
 
-// Remove compromisso (apenas a partir da hora inicial)
+// remove compromisso (apenas a partir da hora inicial)
 void remover_compromisso() {
     int dia, hora;
 
@@ -199,7 +200,7 @@ void remover_compromisso() {
     printf("✅ Compromisso removido!\n");
 }
 
-// Edita um compromisso existente
+// edita um compromisso existente
 void editar_compromisso() {
     int dia, hora;
     printf("\n═════ EDITAR COMPROMISSO ═════\n");
@@ -275,6 +276,8 @@ void editar_compromisso() {
     printf("✅ Compromisso editado!\n");
 }
 
+// visualiza a agenda complet
+
 void ver_agenda() {
     int tem_compromisso = 0;
     
@@ -309,8 +312,7 @@ void ver_agenda() {
     }
 }
 
-
-// Edita compromisso existente
+// edita compromisso existente
 void editar_compromisso() {
     int dia, hora;
     char nova_desc[100], novo_local[50];
@@ -363,7 +365,7 @@ void editar_compromisso() {
     printf("✅ Compromisso atualizado!\n");
 }
 
-// Muda prioridade
+// muda prioridade
 void mudar_prioridade() {
     int dia, hora, opcao;
     
@@ -406,7 +408,7 @@ void mudar_prioridade() {
     printf("✅ Prioridade atualizada!\n");
 }
 
-// Verifica se o horário tá livre
+// verifica se o horário tá livre
 int verificar_disponibilidade(int dia, int hora, int duracao) {
     for(int i = 0; i < duracao; i++) {
         if(hora + i >= HORAS) {
