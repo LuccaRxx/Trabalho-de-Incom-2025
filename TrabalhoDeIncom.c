@@ -252,3 +252,8 @@ int verificar_disponibilidade(int dia, int hora, int duracao) {
     }
     return 0; // Tudo livre
 }
+
+void limpar_buffer() {
+    int c;
+    while((c = getchar()) != '\n' && c != EOF);
+}
