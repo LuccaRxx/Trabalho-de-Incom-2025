@@ -83,6 +83,7 @@ void inicializar_agenda(){
         }
     }
 }
+
 // Marcos -> funcao que mostra o menu principal
 void mostrar_menu(){
     printf("\n--- MENU ---\n");
@@ -93,6 +94,7 @@ void mostrar_menu(){
     printf("5 - Mudar prioridade\n");
     printf("0 - Sair\n");
 }
+
 // Isabela -> função que adiciona compromisso a agenda
 void adicionar_compromisso() {
 
@@ -118,7 +120,7 @@ void adicionar_compromisso() {
         return;
     }
 
-    printf("Duracao: ");
+    printf("Duracao em horas: ");
     scanf("%d",&duracao);
 
     if(hora + duracao > HORAS){
@@ -152,6 +154,7 @@ void adicionar_compromisso() {
 
     printf("Compromisso adicionado.\n");
 }
+
 // lucca -> função que remove compromisso da agenda
 void remover_compromisso(){
     int dia, hora;
@@ -187,6 +190,7 @@ void remover_compromisso(){
 
     printf("Removido.\n");
 }
+
 // Eduardo -> funcao que visualizaa a agenda como um todo
 void ver_agenda(){
 
@@ -223,6 +227,7 @@ void ver_agenda(){
         printf("Nenhum compromisso ainda.\n");
     }
 }
+
 // Isabela -> funcao que edita os compromissos da agenda
 void editar_compromisso(){
 
@@ -255,6 +260,7 @@ void editar_compromisso(){
 
     printf("Atualizado.\n");
 }
+
 // Marcos -> funcao que muda a prioridade dos compromissos da agenda
 void mudar_prioridade(){
     int dia, hora;
@@ -288,6 +294,7 @@ void mudar_prioridade(){
 
     printf("Alterado.\n");
 }
+
 // Lucca -> funcao que verifica se o horario ta disponivel
 int verificar_disponibilidade(int dia, int hora, int duracao){
     for(int i=0; i<duracao; i++){
